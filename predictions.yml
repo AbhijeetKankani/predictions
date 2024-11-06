@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: predictions-pipeline # executable id, must be unique across all your workflows (YAML files), please modify this to any value (e.g. code-pipeline-12345) if you are not the only user of your SAP AI Core instance.
+  annotations:
+    scenarios.ai.sap.com/description: "Predictions SAP AI Core"
+    scenarios.ai.sap.com/name: "Predictions AI Core"
+    executables.ai.sap.com/description: "Predictions AI Core"
+    executables.ai.sap.com/name: "Predictions AI Core"
+  labels:
+    scenarios.ai.sap.com/id: "predictions-aicore"
+    ai.sap.com/version: "1.0"
+spec:
+  imagePullSecrets:
+    - name: dockerhub-registry
+  entrypoint: predictionspipeline
+  templates:
+  - name: predictionspipeline
+    steps:
+    - - name: predictor
+        template: predictorcodeblock
+
+  - name: predictorcodeblock
+    container:
+      image: docker.io/nageshboga/predictions:01
+      command: ["/bin/sh", "-c"]
+      args:
+        - "python /app/src/stp_mock.py"
